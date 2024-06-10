@@ -28,9 +28,10 @@ const User = {
             }
         })
     },
-    update: ( updateUser,user_id,result) => {
-        const query = "update user set ? where user_id = ?";
-        database.query(query, [updateUser, user_id], (err, res) => {
+     update : (updateUser, user_id, result) => {
+        const query = "UPDATE user SET ? WHERE user_id = ?";
+        const values = [updateUser, user_id];
+        database.query(query, values, (err, res) => {
             if (err) {
                 console.error("Error updating user: ", err);
                 result(err, null);
@@ -39,8 +40,34 @@ const User = {
                 result({ kind: "not_found" }, null);
                 return;
             } else {
-                console.log("User updated", { id: res.user_id, ...updateUser });
-                result(null, { id: res.user_id, ...updateUser });
+                console.log("User updated", { id: user_id, ...updateUser });
+                result(null, { id: user_id, ...updateUser });
+            }
+        });
+    }
+    ,
+    
+    fetchData: (result) => {
+        const query = "select * from user where user_id = 4";
+        database.query(query, (err, res) => {
+            if (err) {
+                console.error("Error while getting user data :", err);
+                result(err, null);
+            } else {
+                console.log("Fetch user successfully", res);
+                result(null, res);
+            }
+        });
+    },
+    deleteAddress: (user_id, address, result) => {
+        const query = "UPDATE user SET address = '' WHERE user_id = ? AND address = ?";
+        database.query(query, [user_id, address], (err, res) => {
+            if (err) {
+                console.error("Error while deleting address:", err);
+                result(err, null);
+            } else {
+                console.log("Deleted address successfully", res);
+                result(null, res);
             }
         });
     }
